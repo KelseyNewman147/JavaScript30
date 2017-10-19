@@ -24,6 +24,7 @@
     .panels {
       min-height:100vh;
       overflow: hidden;
+      display: flex;
     }
 
     .panel {
@@ -41,6 +42,12 @@
       font-size: 20px;
       background-size:cover;
       background-position:center;
+      flex: 1; 
+      /*makes the panels evenly distribute themselves in available space*/
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      flex-direction: column;
     }
 
 
@@ -54,6 +61,30 @@
       margin:0;
       width: 100%;
       transition:transform 0.5s;
+      flex: 1 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .panel > *:first-child {
+      transform: translateY(-100%)
+      /*pushes first child up through top of screen*/
+    }
+
+.panel.open-active > *:first-child {
+      transform: translateY(0)
+      /*transitions first child to come back into view*/
+    }
+
+    .panel > *:last-child {
+      transform: translateY(100%)
+      /*pushes last child up through bottom of screen*/
+    }
+
+    .panel.open-active > *:last-child {
+      transform: translateY(0)
+      /*transitions last child to come back into view*/
     }
 
     .panel p {
@@ -68,6 +99,8 @@
 
     .panel.open {
       font-size:40px;
+      flex: 5;
+      /*panel with class of open takes 5 times the amount of extra room as the rest of them*/
     }
 
   </style>
@@ -102,6 +135,20 @@
   </div>
 
   <script>
+  const panels =document.querySelectorAll('.panel');
+
+  function toggleOpen() {
+    this.classList.toggle('open');
+  }
+
+  function toggleActive(e) {
+    if (e.propertyName.includes('flex')) {//some browsers use 'flex-grow', others just use 'flex'
+      this.classList.toggle('open-active');
+    }
+  }
+
+  panels.forEach(panel => panel.addEventListener('click', toggleOpen));
+  panels.forEach(panel => panel.addEventListener('transitionend', toggleActive));
 
   </script>
 
