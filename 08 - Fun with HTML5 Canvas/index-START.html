@@ -7,6 +7,62 @@
 <body>
 <canvas id="draw" width="800" height="800"></canvas>
 <script>
+  const canvas = document.querySelector('#draw');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height =window.innerHeight;
+
+  ctx.strokeStyle = '#BADA55';//color used to draw
+  ctx.lineJoin = 'round';//end of the line - squared or rounded?
+  ctx.lineCap = 'round';
+  ctx.lineWidth = 1;
+  ctx.globalCompositeOperation = 'lighten';
+
+  let isDrawing = false;//when click down - set to true, set back to false when released
+  let lastX = 0;
+  let lastY= 0;
+  let hue = 0;
+  let direction = true;
+
+  function draw(e) {
+    if (!isDrawing) return; //stop the fn from running when they are not moused down
+
+    console.log(e);
+
+    ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);//start the line
+    ctx.lineTo(e.offsetX, e.offsetY); //go to (values comes from the actual event that's happening)
+    ctx.stroke();//allows us to actually see something on the page
+    [lastX, lastY] = [e.offsetX, e.offsetY];//destructuring an array
+    hue++;//increments hue for color change
+    if(hue >= 360 ) {//sets hue back to 0 once it reaches other end of the spectrum
+      hue = 0;
+    }
+    if(ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {//direction variable is flipped once limit is reached
+      direction = !direction;
+    }
+
+    if(direction) {//line width increments or decrements based on direction variable
+      ctx.lineWidth++;
+    } else {
+      ctx.lineWidth--;
+    }
+    
+  }
+    canvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+      [lastX, lastY] = [e.offsetX, e.offsetY];//update lastX and lastY before mouse is moved (starts line where mouse is pressed)
+    
+      });
+
+
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('mouseout', () => isDrawing = false);//sets to false if mouse moves outside of the frame
+
 </script>
 
 <style>
