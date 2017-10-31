@@ -43,7 +43,7 @@
   </div>
 
   <script>
-    function debounce(func, wait = 20, immediate = true) {
+    function debounce(func, wait = 20, immediate = true) {//pass it a function and it will run debounce all the time when we scroll, but only run checkSlide every 20 ms. 
       var timeout;
       return function() {
         var context = this, args = arguments;
@@ -57,6 +57,29 @@
         if (callNow) func.apply(context, args);
       };
     }
+
+    const sliderImages =document.querySelectorAll('.slide-in');
+
+    function checkSlide(e) {
+      //when the image is peeking on the page at least 50% of its height, that's when we wan to animate it
+      sliderImages.forEach(sliderImage => {
+        //half way through the image
+        const slideInAt = (window.scrollY + window.innerHeight) -//tells you how far down you are scrolled
+          sliderImage.height / 2;//slide in at middle of image
+        //bottom of the image
+        const imageBottom = sliderImage.offsetTop + sliderImage.height;//the bottom of this image is how far from the top of the window? 
+        const isHalfShown = slideInAt > sliderImage.offsetTop;
+        const isNotScrolledPast =window.scrollY < imageBottom; 
+        if (isHalfShown && isNotScrolledPast) {
+          sliderImage.classList.add('active');
+        } else {
+          sliderImage.classList.remove('active');
+        }
+      });
+    
+    }
+
+    window.addEventListener('scroll', debounce(checkSlide));//make sure you debounce for any scroll functions. Gives you more control & better for performance
 
   </script>
 
