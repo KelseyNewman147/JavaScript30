@@ -28,8 +28,50 @@
 <script>
   const addItems = document.querySelector('.add-items');
   const itemsList = document.querySelector('.plates');
-  const items = [];
+  const items = JSON.parse(localStorage.getItem('items')) || [];//on page load, check if items exists - it will get it from localStorage - or fall back to empty array
 
+  function addItem(e) {
+    e.preventDefault();//stops the page from reloading, which is the default action in order to send data to external source (server side)
+    const text = (this.querySelector('[name=item]')).value;//this -> the actual form, and we'll look inside of that form tag for something with the name attribute 'item'
+    const item = {
+      text,
+      done: false
+    };
+
+    items.push(item);
+    populateList(items, itemsList);
+    localStorage.setItem('items',JSON.stringify(items));//localStorage is simply a key/value stoe - not an object. If anything other than a string is passed, the browser will convert that into a string (ie. 'object Oject')
+    this.reset();
+  }
+  //don't pull in items and itemsList so that you can pass any array of plates and any destination HTML element and it will work - more resilient 
+  function populateList(plates = [], platesList) {//start with an empty array so, if you don't pass anything in, it won't break - it will just loop over the empty array 
+    platesList.innerHTML = plates.map((plate, i) => {
+      return `
+        <li>
+          <input type="checkbox" data-index=${i} id="item${i}" ${plate.done ? 'checked' : ''}/>
+          <label for="item${i}">${plate.text}</label>
+        </li>
+      `;//this list gets recreated everytime a plate is added. If performance is an issue, look into ways to affect the least amount 
+      //of HTML as possible so that only that element will be updated and rerendered 
+    }).join('');//take the array that the map makes and turn it into a string
+  }
+
+  //event delegation - look for somebody that will exist on the page at the time of the event listener
+  //tell ul(itemsList) that contains child li(item) elements to listen for the click event and pass it on to that child li
+  //think - responsible parent and negligent child that doesn't know what to do with instructions, so parent has to tell them
+  function toggleDone(e) {
+    if(!e.target.matches('input')) return; //skip this unless its an input
+    const el = e.target;
+    const index = el.dataset.index;
+    items[index].done = !items[index].done;//change done property to opposite value
+    localStorage.setItem('items', JSON.stringify(items));//store it in localStorage
+    populateList(items, itemsList);//visually update whats on our page
+
+  }
+
+  addItems.addEventListener('submit', addItem);
+  itemsList.addEventListener('click', toggleDone);
+  populateList(items, itemsList);
 </script>
 
 
