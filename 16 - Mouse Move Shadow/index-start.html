@@ -35,6 +35,32 @@
   </style>
 
 <script>
+  const hero = document.querySelector('.hero');
+  const text = hero.querySelector('h1');
+  const walk = 100;
+
+  function shadow(e) {
+    const {offsetWidth: width, offsetHeight: height} = hero;
+    let {offsetX: x, offsetY: y} = e;//get the position where your cursor is
+
+    if (this !== e.target) {//account for child element (where x and y will be set back to 0)
+      x = x + e.target.offsetLeft;//if someone hovers in topleft corner of woah, add pixels from within that child element to whats on the left
+      y = y + e.target.offsetTop;//and on the top
+    }
+
+    const xWalk = Math.round((x/width * walk) - (walk/2));//if 100 is as high as we'll go, we need to go from 50 to -50
+    const yWalk = Math.round((y/width * walk) - (walk/2));
+    
+    text.style.textShadow = `
+    ${xWalk}px ${yWalk}px 0 rgba(255, 0, 255, 0.7),
+    ${xWalk * -1}px ${yWalk}px 0 rgba(0, 255, 255, 0.7),
+    ${yWalk}px ${xWalk * -1}px 0 rgba(0, 255, 0, 0.7),
+    ${yWalk * -1}px ${xWalk}px 0 rgba(0, 0, 255, 0.7)
+    `;
+  }
+
+  hero.addEventListener('mousemove', shadow);
+
 </script>
 </body>
 </html>
