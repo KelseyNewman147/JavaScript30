@@ -45,8 +45,23 @@
 
 <script>
 const bands = ['The Plot in You', 'The Devil Wears Prada', 'Pierce the Veil', 'Norma Jean', 'The Bled', 'Say Anything', 'The Midway State', 'We Came as Romans', 'Counterparts', 'Oh, Sleeper', 'A Skylit Drive', 'Anywhere But Here', 'An Old Dog'];
+// const articles = ['The', 'An', 'A'];
 
+// const sorted = bands.sort((lastOne, nextOne) => {
+//   const [firstWordA, restA] = lastOne.split(" ");
+//   const [firstWordB, restB] = nextOne.split(" ");
+//     if (articles[firstWordA]) {
+//       const[nextWord, restA] = firstWordA.split(" ");
+//     }
+// });
+function strip(bandName) {
+  return bandName.replace(/^(a |the |an)/i, '').trim(); //regex to look for "a ", the ", or "an " (including space to avoid words beginning with "a"). Replace with nothing and trim space afterwards
+}
 
+const sortedBands = bands.sort((a,b) => strip(a) > strip(b) ? 1 : -1);//strip is only used in if statement, so the data itself is not altered.
+
+document.querySelector('#bands').innerHTML = sortedBands.map(band => `<li>${band}</li>`)//takes element and sets inner HTML to bands 
+  .join('');//joins the array into one big string rather than a bunch of strings with a comma in between
 </script>
 
 </body>
